@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <f:facet name="first">
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title>Visualização de Teatros Cadastrados</title>
+        </f:facet>
+        <h:outputStylesheet name="style.css" library="css"/>
+        <h:outputStylesheet name="default.css" library="css"/>
+        <h:outputStylesheet name="overrides.css" library="css"/>
+    </h:head>
+    <h:body>
+        <h3>Peças de Teatro Cadastradas</h3>
+        <h:dataTable value="#{emissaoIngressosBean.teatros}" var="teatro"
+                     rowClasses="oddRows,evenRows" headerClass="header"
+                     styleClass="table" cellpadding="10" cellspacing="0">
+            <h:column>
+                <f:facet name="header">Nome da Peça</f:facet>
+                    #{teatro.peça}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Gênero</f:facet>
+                    #{teatro.gênero}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Classificação Indicativa</f:facet>
+                    #{teatro.indicativa}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Local</f:facet>
+                    #{teatro.localidade}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Dia</f:facet>
+                    #{teatro.dia}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Horário</f:facet>
+                    #{teatro.horário}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Valor do Ingresso</f:facet>
+                    #{teatro.valorIngresso}
+            </h:column>
+        </h:dataTable>
+        <h:form>
+            <h:commandButton value="Nova Peça" action="cadastro"/>
+            <h:commandButton value="Pesquisar Peças" action="pesquisa"/>
+        </h:form>
+    </h:body>
+</html>
