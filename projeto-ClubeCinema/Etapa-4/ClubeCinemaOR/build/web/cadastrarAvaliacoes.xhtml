@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+
+    <h:body>
+        <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:h="http://java.sun.com/jsf/html"
+                    xmlns:f="http://java.sun.com/jsf/core"
+                    xmlns:ui="http://java.sun.com/jsf/facelets"
+                    xmlns:p="http://primefaces.org/ui"
+                    template="/template.xhtml">
+        <ui:define name="conteudo">
+            <h2>Cadastrar Avaliações</h2>
+            <p:panel header="Avaliações Cadastrados">
+                <p:outputPanel id="avaliacao">
+                    <p:dataTable id="dataTable" var="avaliacao"
+                                 value="#{avaliacaoBean.all}"
+                                 widgetVar="tabelaAvaliacoes"
+                                 emptyMessage="Nenhum registro encontrado"
+                                 filteredValue="#{avaliacaoBean.avaliacoesFiltradas}">
+                        
+                        <p:column headerText="Nome do Amigo" filterBy="nomeDoFilme" footerText="startsWith">
+                            <h:outputText value="#{avaliacao.amigo.nome}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Título do Filme" filterBy="tituloDoFilme" footerText="startsWith">
+                            <h:outputText value="#{avaliacao.filme.titulo}"/>
+                        </p:column>
+                        
+                        <p:column filterBy="genero"
+                                  headerText="Gênero"
+                                  footerText="exact"
+                                  filterOptions="#{filmeBean.getGeneros(true)}">
+                            <h:outputText value="#{avaliacao.filme.genero}"/>
+                        </p:column>
+                        
+                        <p:column filterBy="classificacaoTrama"
+                                  headerText="Trama" footerText="exact"
+                                  filterOptions="#{avaliacaoBean.getClassificacoes(true)}"
+                                  filterMatchMode="exact">
+                            <h:outputText value="#{avaliacao.classificacaoTrama}"/>
+                        </p:column>
+                        
+                        <p:column filterBy="entreMeus10Preferidos"
+                                  headerText="Entre Meus 10 Preferidos" footerText="exact"
+                                  filterOptions="#{avaliacaoBean.getOptionsEntreMeusDezPreferidos()}"
+                                  filterMatchMode="exact">
+                            <h:outputText value="#{avaliacao.entreMeusDezPreferidos?'sim':'não'}"/>
+                        </p:column>
+
+                        <p:column headerText="Ação">
+                            <p:commandButton value="Consultar" action="#{avaliacaoBean.consultar(avaliacao)}"
+                                             oncomplete="panelAvaliacao.show();"
+                                             update=":form:displayAvaliacao"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel>
+                        <p:commandButton value="Cadastrar"
+                                         actionListener="#{avaliacaoBean.inserir()}"
+                                         oncomplete="panelAvaliacao.show();"
+                                         update=":form:displayAvaliacao"/>
+                    </p:panel>
+                </p:outputPanel>
+            </p:panel>
+            <p:panel header="Dados do Avaliacao" id="dadosAvaliacao" widgetVar="panelAvaliacao"
+                     visible="false" closable="true" style="margin-top:10px">
+                <p:messages id="erroAvaliacao"/>
+                
+                <h:panelGrid id="displayAvalicao" columns="1" styleClass="grid">
+                    <p:panel>
+                        <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                            <h:outputText value="Nome do Amigo *"/>
+                            <p:selectOneMenu id="amigoSelectOneMenu" value="#{avaliacaoBean.value.amigo}"
+                                             required="false" label="Cliente" style=width:300px"">
+                                <f:selectItems value="#{amigoBean.all}"/>
+                            </p:selectOneMenu> 
+                            <p:message for="nomeDoAmigoInputText"/>
+
+                            <h:outputText value="Título do Filme *"/>
+                            <p:selectOneMenu id="tituloSelectOneMenu" value="#{avaliacaoBean.value.filme}"
+                                             required="false" label="Cli" style="width:300px">
+                                <f:selectItems value="#{filmeBean.all}" />
+                            </p:selectOneMenu>
+                            <p:message for="apelidoInputText"/>
+
+                            <h:outputText value="Classificação da Trama *"/>
+                            <p:selectOneRadio id="classificacaoDaTramaSelectOneRadio"
+                                              value="#{avaliacaoBean.value.classificacaoTrama}"
+                                              required="false" label="ClassificaoDaTrama">
+                                <f:selectItems value="#{avaliacaoBean.getClassificacoes(false)}" />
+                            </p:selectOneRadio>
+                            <p:message for="classificacaoDaTramaSelectOneRadio"/>
+
+                            <h:outputText value="Classificação da Direção *"/>
+                            <p:selectOneRadio id="classificacaoDaDirecaoSelectOneRadio"
+                                              value="#{avaliacaoBean.value.classificacaoDirecao}"
+                                              required="false" label="ClassificaoDaDirecao">
+                                <f:selectItems value="#{avaliacaoBean.getClassificacoes(false)}" />
+                            </p:selectOneRadio>
+                            <p:message for="classificacaoDaDirecaoSelectOneRadio"/>
+
+                            <h:outputText value="Classificação da Atuação *"/>
+                            <p:selectOneRadio id="classificacaoDaAtuacaoSelectOneRadio"
+                                              value="#{avaliacaoBean.value.classificacaoAtuacao}"
+                                              required="false" label="ClassificaoDaAtuacao">
+                                <f:selectItems value="#{avaliacaoBean.getClassificacoes(false)}" />
+                            </p:selectOneRadio>
+                            <p:message for="classificacaoDaAtuacaoSelectOneRadio"/>
+
+                            <h:outputText value="Entre Meus Dez Preferidos *"/>
+                            <p:selectBooleanCheckbox id="entreMeusDezPreferidosSelectBooleanCheckbox"
+                                                     value="#{avaliacaoBean.value.entreMeusDezPreferidos}"/>
+                            <p:message for="entreMeusDezPreferidosSelectBooleanCheckbox"/>
+                        </h:panelGrid>
+                    </p:panel>
+                    <h:panelGroup rendered="#{!avaliacaoBean.consultado}">
+                        <p:commandButton value="Inserir" action="#{avaliacaoBean.save()}"
+                                         ajax="false" icon="ui-icon-circle-plus"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{avaliacaoBean.consultado}">
+                        <p:commandButton value="Alterar" action="#{avaliacaoBean.update()}"
+                                         ajax="false" icon="ui-icon-circle-arrow-e"/>
+                        <p:commandButton value="Remover" action="#{avaliacaoBean.delete()}"
+                                         ajax="false" icon="ui-icon-circle-minus"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+            </p:panel>
+            
+        </ui:define>
+        </ui:composition> 
+    </h:body>
+</html>

@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Amigos</h2>
+        <p:panel header="Amigos Cadastrados">
+            <p:outputPanel id="amigo">
+                <p:dataTable id="dataTable" var="amigo"
+                             value="#{amigoBean.all}"
+                             widgetVar="tabelaAmigos"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{amigoBean.amigosFiltrados}">
+                    <p:column headerText="Nome" filterBy="nome" footerText="startsWith">
+                        <h:outputText value="#{amigo.nome}" />
+                    </p:column>
+                    <p:column headerText="Apelido" filterBy="apelido" footerText="startsWith">
+                        <h:outputText value="#{amigo.apelido}" />
+                    </p:column>
+                    <p:column filterBy="sexo"
+                              headerText="Sexo" footerText="exact"
+                              filterOptions="#{amigoBean.getSexos(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{amigo.sexo}" />
+                    </p:column>
+                    <p:column filterBy="estadoCivil"
+                              headerText="Estado Civil" footerText="exact"
+                              filterOptions="#{amigoBean.getEstadosCivis(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{amigo.estadoCivil}" />
+                    </p:column>
+                    <p:column headerText="Cidade" filterBy="cidade" footerText="startsWith">
+                        <h:outputText value="#{amigo.cidade}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{amigoBean.consultar(amigo)}"
+                                         oncomplete="panelAmigo.show();"
+                                         update=":form:dadosAmigo" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{amigoBean.inserir()}"
+                                     oncomplete="panelAmigo.show();"
+                                     update=":form:displayAmigo" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Amigo" id="dadosAmigo" widgetVar="panelAmigo"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroAmigo"/>
+            <h:panelGrid id="displayAmigo" columns="1" styleClass="grid">
+                <p:panel>
+                    <p:wizard
+                        flowListener="#{amigoBean.onFlowProcess}"
+                        backLabel="Anterior"
+                        nextLabel="Próximo">
+                        <p:tab id="dadosPessoais" title="1. Dados Pessoais">
+                            <p:panel header="Dados Pessoais">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Nome Completo: *" />
+                                    <p:inputText id="nomeInputText" required="false" label="Nome"
+                                                 value="#{amigoBean.value.nome}" styleClass="ipt-large" />
+                                    <p:message for="nomeInputText" />
+                                    <h:outputText value="Apelido: *" />
+                                    <p:inputText id="apelidoInputText" required="false" label="Apelido"
+                                                 value="#{amigoBean.value.apelido}" styleClass="ipt-large" />
+                                    <p:message for="apelidoInputText" />
+                                    <h:outputText value="Sexo: *" />
+                                    <p:selectOneRadio id="sexoSelectOneRadio"
+                                                      value="#{amigoBean.value.sexo}"
+                                                      required="false" label="Sexo" style="width:70px">
+                                        <f:selectItems value="#{amigoBean.getSexos(false)}" />
+                                    </p:selectOneRadio>
+                                    <p:message for="sexoSelectOneRadio" />
+                                    <h:outputText value="Estado Civil: *" />
+                                    <p:selectOneMenu id="estadoCivilSelectOneMenu"
+                                                     value="#{amigoBean.value.estadoCivil}"
+                                                      required="false" label="Estado Civil" style="width:100px">
+                                        <f:selectItems value="#{amigoBean.getEstadosCivis(false)}" />
+                                    </p:selectOneMenu>
+                                    <p:message for="estadoCivilSelectOneMenu" />
+                                    <h:outputText value="Data de Nascimento: *" />
+                                    <p:inputMask id="dataNascimentoInputMask" required="false"
+                                                 label="Data de Nascimento" mask="99/99/9999"
+                                                 value="#{amigoBean.value.dataNascimento}">
+                                        <f:convertDateTime pattern="DD/mm/yyyy" locale="pt_BR"/>
+                                    </p:inputMask>
+                                    <p:message for="dataNascimentoInputMask" />
+                                    <h:outputText value="Cidade: *" />
+                                    <p:inputText id="cidadeInputText" required="false" label="Cidade"
+                                                 value="#{amigoBean.value.cidade}" styleClass="ipt-large" />
+                                    <p:message for="cidadeInputText" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:tab>
+                        <p:tab id="contatos" title="2. Contatos">
+                            <p:panel header="Contatos">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Email: " />
+                                    <p:inputText id="emailInputText" required="false" label="Email"
+                                                 value="#{amigoBean.value.email}" styleClass="ipt-large" />
+                                    <p:message for="emailInputText" />
+                                    <h:outputText value="Whatsapp: " />
+                                    <p:inputText id="whatsappInputText" required="false" label="Whatsapp"
+                                                 value="#{amigoBean.value.whatsapp}" styleClass="ipt-large" />
+                                    <p:message for="whatsappInputText" />
+                                    <h:outputText value="Facebook: " />
+                                    <p:inputText id="facebookInputText" required="false" label="Facebook"
+                                                 value="#{amigoBean.value.facebook}" styleClass="ipt-large" />
+                                    <p:message for="facebookInputText" />
+                                    <h:outputText value="Instagram: " />
+                                    <p:inputText id="instagramInputText" required="false" label="Instagram"
+                                                 value="#{amigoBean.value.instagram}" styleClass="ipt-large" />
+                                    <p:message for="instagramInputText" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:tab>
+                    </p:wizard>
+                </p:panel>
+                <h:panelGroup rendered="#{amigoBean.consultar == false}">
+                    <p:commandButton value="Inserir" action="#{amigoBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{amigoBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{amigoBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{amigoBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

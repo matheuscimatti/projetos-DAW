@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+
+    <h:body>
+        <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:h="http://java.sun.com/jsf/html"
+                    xmlns:f="http://java.sun.com/jsf/core"
+                    xmlns:ui="http://java.sun.com/jsf/facelets"
+                    xmlns:p="http://primefaces.org/ui"
+                    template="/template.xhtml">
+        <ui:define name="conteudo">
+            <h2>Cadastrar Amigos</h2>
+            <p:panel header="Amigos Cadastrados">
+                <p:outputPanel id="amigo">
+                    <p:dataTable id="dataTable" var="amigo"
+                                 value="#{amigoBean.all}"
+                                 widgetVar="tabelaAmigos"
+                                 emptyMessage="Nenhum registro encontrado"
+                                 filteredValue="#{amigoBean.amigosFiltrados}">
+                        
+                        <p:column headerText="Nome" filterBy="nome" footerText="startsWith">
+                            <h:outputText value="#{amigo.nome}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Apelido" filterBy="apelido" footerText="startsWith">
+                            <h:outputText value="#{amigo.apelido}"/>
+                        </p:column>
+                        
+                        <p:column filterBy="sexo"
+                                  headerText="Sexo"
+                                  footerText="exact"
+                                  filterOptions="#{amigoBean.getSexos(true)}">
+                            <h:outputText value="#{amigo.sexo}"/>
+                        </p:column>
+                        
+                        <p:column filterBy="estadoCivil"
+                                  headerText="Estado Civil" footerText="exact"
+                                  filterOptions="#{amigoBean.getEstadosCivis(true)}"
+                                  filterMatchMode="exact">
+                            <h:outputText value="#{amigo.estadoCivil}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Cidade" filterBy="cidade" footerText="startsWith">
+                            <h:outputText value="#{amigo.cidade}"/>
+                        </p:column>
+
+                        <p:column headerText="Ação">
+                            <p:commandButton value="Consultar" action="#{amigoBean.consultar(amigo)}"
+                                             oncomplete="panelAmigo.show();"
+                                             update=":form:displayAmigo"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel>
+                        <p:commandButton value="Cadastrar"
+                                         actionListener="#{amigoBean.inserir()}"
+                                         oncomplete="panelAmigo.show();"
+                                         update=":form:displayAmigo"/>
+                    </p:panel>
+                </p:outputPanel>
+            </p:panel>
+            <p:panel header="Dados do Amigo" id="dadosAmigo" widgetVar="panelAmigo"
+                     visible="false" closable="true" style="margin-top:10px">
+                <p:messages id="erroAmigo"/>
+                <h:panelGrid id="displayAmigo" columns="1" styleClass="grid">
+                    <p:panel>
+                        <p:wizard
+                            flowListener="#{amigoBean.onFlowProcess}"
+                            backLabel="Anterior"
+                            nextLabel="Próximo">
+                            <p:tab id="dadosPessoais" title="1. Dados Pessoais">
+                                <p:panel header="Dados Pessoais">
+                                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                        <h:outputText value="Nome Completo *"/>
+                                        <p:inputText id="nomeInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                                 label="Nome" value="#{amigoBean.value.nome}" styleClass="grid"
+                                                                 requiredMessage="nome não preenchido">
+                                        </p:inputText>
+                                        <p:message for="nomeInputText"/>
+                                        
+                                        <h:outputText value="Apelido *"/>
+                                        <p:inputText id="apelidoInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                                 label="Apelido" value="#{amigoBean.value.apelido}" styleClass="grid"
+                                                                 requiredMessage="apelido não preenchido">
+                                        </p:inputText>
+                                        <p:message for="apelidoInputText"/>
+                                        
+                                        <h:outputText value="Sexo *"/>
+                                        <p:selectOneRadio id="sexoSelectOneRadio"
+                                                                          value="#{amigoBean.value.sexo}"
+                                                                          required="false" label="Sexo">
+                                                <f:selectItem itemValue="masculino" itemLabel="Masculino"/>
+                                                <f:selectItem itemValue="feminino" itemLabel="Feminino"/>
+                                        </p:selectOneRadio>
+                                        <p:message for="sexoSelectOneRadio"/>
+                                        
+                                        <h:outputText value="Estado Civil *"/>
+                                        <p:selectOneMenu id="estadoCivilSelectOneMenu"
+                                                                         value="#{amigoBean.value.estadoCivil}"
+                                                                         required="false" label="Estado Civil" style="width:100px">  
+                                                <f:selectItems value="#{amigoBean.getEstadosCivis(false)}"/>
+                                        </p:selectOneMenu>
+                                        <p:message for="estadoCivilSelectOneMenu"/>
+
+                                        <h:outputText value="Data de nascimento *"/>
+                                        <p:inputMask id="dataNascimentoInputMask" required="false"
+                                                                 label="Data de Nascimento" mask="99/99/9999"
+                                                                 value="#{amigoBean.value.dataNascimento}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"/>
+                                        </p:inputMask>
+                                        <p:message for="dataNascimentoInputMask"/>
+
+                                        <h:outputText value="Cidade *"/>
+                                        <p:inputText id="cidadeInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                                 label="Cidade" value="#{amigoBean.value.cidade}" styleClass="grid"
+                                                                 requiredMessage="cidade não preenchida">
+                                        </p:inputText>
+                                        <p:message for="cidadeInputText"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab id="Contatos" title="2. Contatos">
+                                <p:panel header="Contatos">
+                                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                        <h:outputText value="Email *"/>
+                                        <p:inputText id="emailInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                     label="Email" value="#{amigoBean.value.email}" styleClass="grid"
+                                                     requiredMessage="email não preenchido">
+                                        </p:inputText>
+                                        <p:message for="emailInputText"/>
+                                        
+                                        <h:outputText value="Whatsapp *"/>
+                                        <p:inputText id="whatsappInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                     label="Whatsapp" value="#{amigoBean.value.whatsapp}" styleClass="grid"
+                                                     requiredMessage="whatsapp não preenchido">
+                                        </p:inputText>
+                                        <p:message for="whatsappInputText"/>
+                                        
+                                        <h:outputText value="Facebook *"/>
+                                        <p:inputText id="facebookInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                     label="Facebook" value="#{amigoBean.value.facebook}" styleClass="grid"
+                                                     requiredMessage="facebook não preenchido">
+                                        </p:inputText>
+                                        <p:message for="facebookInputText"/>
+                                        
+                                        <h:outputText value="Instagram *"/>
+                                        <p:inputText id="instagramInputText" required="#{param['form:inserirCommandButton']!= null || param['form:alterarCommandButton']!= null}"
+                                                     label="Instagram" value="#{amigoBean.value.instagram}" styleClass="grid"
+                                                     requiredMessage="instagram não preenchido">
+                                        </p:inputText>
+                                        <p:message for="instagramInputText"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                        </p:wizard>
+                    </p:panel>
+                    <h:panelGroup rendered="#{!amigoBean.consultado}">
+                        <p:commandButton value="Inserir" action="#{amigoBean.save()}"
+                                         ajax="false" icon="ui-icon-circle-plus"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{amigoBean.consultado}">
+                        <p:commandButton value="Alterar" action="#{amigoBean.update()}"
+                                         ajax="false" icon="ui-icon-circle-arrow-e"/>
+                        <p:commandButton value="Remover" action="#{amigoBean.delete()}"
+                                         ajax="false" icon="ui-icon-circle-minus"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+            </p:panel>
+            
+        </ui:define>
+        </ui:composition> 
+    </h:body>
+</html>
