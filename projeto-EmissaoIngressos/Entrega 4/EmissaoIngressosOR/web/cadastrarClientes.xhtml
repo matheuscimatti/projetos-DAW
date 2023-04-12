@@ -1,0 +1,154 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Clientes</h2>
+        <p:panel header="Clientes Cadastrados">
+            <p:outputPanel id="cliente">
+                <p:dataTable id="dataTable" var="cliente"
+                             value="#{clienteBean.all}"
+                             widgetVar="tabelaClientes"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{clienteBean.clientesFiltrados}">
+                    <p:column headerText="Nome" filterBy="nome" footerText="startsWith">
+                        <h:outputText value="#{cliente.nome}" />
+                    </p:column>
+                    <p:column filterBy="sexo"
+                              headerText="Sexo" footerText="exact"
+                              filterOptions="#{clienteBean.getSexos(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{cliente.sexo}" />
+                    </p:column>
+                    <p:column filterBy="estadoCivil"
+                              headerText="Estado Civil" footerText="exact"
+                              filterOptions="#{clienteBean.getEstadosCivis(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{cliente.estadoCivil}" />
+                    </p:column>
+                    <p:column headerText="Cidade" filterBy="endereço.cidade" footerText="startsWith">
+                        <h:outputText value="#{cliente.endereço.cidade}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{clienteBean.consultar(cliente)}"
+                                         oncomplete="panelCliente.show();"
+                                         update=":form:dadosCliente" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{clienteBean.inserir()}"
+                                     oncomplete="panelCliente.show();"
+                                     update=":form:displayCliente" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Cliente" id="dadosCliente" widgetVar="panelCliente"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroCliente"/>
+            <h:panelGrid id="displayCliente" columns="1" styleClass="grid">
+                <p:panel>
+                    <p:wizard
+                        flowListener="#{clienteBean.onFlowProcess}"
+                        backLabel="Anterior"
+                        nextLabel="Próximo">
+                        <p:tab id="dadosPessoais" title="1. Dados Pessoais">
+                            <p:panel header="Dados Pessoais">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Nome Completo: *" />
+                                    <p:inputText id="nomeInputText" required="false" label="Nome"
+                                                 value="#{clienteBean.value.nome}" styleClass="ipt-large" />
+                                    <p:message for="nomeInputText" />
+                                    <h:outputText value="Sexo: *" />
+                                    <p:selectOneRadio id="sexoSelectOneRadio"
+                                                      value="#{clienteBean.value.sexo}"
+                                                      required="false" label="Sexo" style="width:70px">
+                                        <f:selectItems value="#{clienteBean.getSexos(false)}" />
+                                    </p:selectOneRadio>
+                                    <p:message for="sexoSelectOneRadio" />
+                                    <h:outputText value="Estado Civil: *" />
+                                    <p:selectOneMenu id="estadoCivilSelectOneMenu"
+                                                     value="#{clienteBean.value.estadoCivil}"
+                                                      required="false" label="Estado Civil" style="width:100px">
+                                        <f:selectItems value="#{clienteBean.getEstadosCivis(false)}" />
+                                    </p:selectOneMenu>
+                                    <p:message for="estadoCivilSelectOneMenu" />
+                                    <h:outputText value="Data de Nascimento: *" />
+                                    <p:inputMask id="dataNascimentoInputMask" required="false"
+                                                 label="Data de Nascimento" mask="99/99/9999"
+                                                 value="#{clienteBean.value.dataNascimento}">
+                                        <f:convertDateTime pattern="DD/mm/yyyy" locale="pt_BR"/>
+                                    </p:inputMask>
+                                    <p:message for="dataNascimentoInputMask" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:tab>
+                        <p:tab id="contatos" title="2. Contatos">
+                            <p:panel header="Contatos">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Email: " />
+                                    <p:inputText id="emailInputText" required="false" label="Email"
+                                                 value="#{clienteBean.value.email}" styleClass="ipt-large" />
+                                    <p:message for="emailInputText" />
+                                    <h:outputText value="Telefone: " />
+                                    <p:inputText id="telefoneInputText" required="false" label="Whatsapp"
+                                                 value="#{clienteBean.value.telefone}" styleClass="ipt-large" />
+                                    <p:message for="telefoneInputText" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:tab>
+                        <p:tab id="endereço" title="3. Endereço">
+                            <p:panel header="Endereço">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Logradouro: " />
+                                    <p:inputText id="logradouroInputText" required="false" label="Logradouro"
+                                                 value="#{clienteBean.value.endereço.logradouro}" />
+                                    <p:message for="logradouroInputText" />
+                                    <h:outputText value="Número: " />
+                                    <p:inputText id="númeroInputText" required="false" label="Número"
+                                                 value="#{clienteBean.value.endereço.número}"
+                                                 validatorMessage="Apenas números." >
+                                        <f:validateRegex pattern="^[0-9]+$"/>
+                                    </p:inputText>
+                                    <p:message for="númeroInputText" />
+                                    <h:outputText value="Complemento: " />
+                                    <p:inputText id="complementoInputText" required="false" label="Complemento"
+                                                 value="#{clienteBean.value.endereço.complemento}" />
+                                    <p:message for="complementoInputText" />
+                                    <h:outputText value="Bairro: " />
+                                    <p:inputText id="bairroInputText" required="false" label="Bairro"
+                                                 value="#{clienteBean.value.endereço.bairro}" />
+                                    <p:message for="bairroInputText" />
+                                    <h:outputText value="Cidade: " />
+                                    <p:inputText id="cidadeInputText" required="false" label="Cidade"
+                                                 value="#{clienteBean.value.endereço.cidade}" />
+                                    <p:message for="cidadeInputText" />
+                                    <h:outputText value="Cep: " />
+                                    <p:inputText id="cepInputText" required="false" label="Cep"
+                                                 value="#{clienteBean.value.endereço.cep}"
+                                                 validatorMessage="Valor incorreto do Cep (XXXXX-XXX)" >
+                                        <f:validateRegex pattern="^[0-9]{5}-[0-9]{3}$"/>
+                                    </p:inputText>
+                                    <p:message for="cepInputText" />
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:tab>
+                    </p:wizard>
+                </p:panel>
+                <h:panelGroup rendered="#{clienteBean.consultar == false}">
+                    <p:commandButton value="Inserir" action="#{clienteBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{clienteBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{clienteBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{clienteBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

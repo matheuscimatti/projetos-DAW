@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Vendas</h2>
+        <p:panel header="Vendas Cadastradas">
+            <p:outputPanel id="venda">
+                <p:dataTable id="dataTable" var="venda"
+                             value="#{vendaBean.all}"
+                             widgetVar="tabelaVendas"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{vendaBean.vendasFiltradas}">
+                    <p:column headerText="Código da Venda" filterBy="código" footerText="startsWith">
+                        <h:outputText value="#{venda.código}" />
+                    </p:column>
+                    <p:column filterBy="cliente.nome" headerText="Nome do Cliente" footerText="startsWith">
+                        <h:outputText value="#{venda.cliente.nome}" />
+                    </p:column>
+                    <p:column filterBy="pagamento"
+                              headerText="Tipo de Pagamento" footerText="exact"
+                              filterOptions="#{vendaBean.getPagamentos(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{venda.pagamento}" />
+                    </p:column>
+                    <p:column filterBy="meiaEntrada"
+                              headerText="Meia Entrada" footerText="exact"
+                              filterOptions="#{vendaBean.getOptionsMeiaEntrada()}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{venda.meiaEntrada?'sim':'não'}"/>
+                    </p:column>
+                    <p:column headerText="Data e Hora">
+                        <h:outputText value="#{venda.dataHora}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{vendaBean.consultar(venda)}"
+                                         oncomplete="panelVenda.show();"
+                                         update=":form:dadosVenda" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{vendaBean.inserir()}"
+                                     oncomplete="panelVenda.show();"
+                                     update=":form:displayVenda" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados da Venda" id="dadosVenda" widgetVar="panelVenda"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroVenda"/>
+            <h:panelGrid id="displayVenda" columns="1" styleClass="grid">
+                <p:panel>
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                        <h:outputText value="Código da Venda *" />
+                        <p:inputText id="códigoInputText" required="false" label="Código"
+                                     value="#{vendaBean.value.código}" styleClass="ipt-large" />
+                        <p:message for="códigoInputText" />
+                        <h:outputText value="Cliente *" />
+                        <p:autoComplete id="clienteAutoComplete" value="#{vendaBean.value.cliente}"
+                                        completeMethod="#{clienteBean.completaClientes}"
+                                        converter="#{clienteConverter}"
+                                        var="cliente" itemValue="#{cliente}" itemLabel="#{cliente.nome}" />
+                        <p:message for="clienteAutoComplete" />
+                        <h:outputText value="Ingresso(s) *" />
+                        <p:autoComplete id="ingressoAutoComplete" value="#{vendaBean.value.ingressos}"
+                                        completeMethod="#{ingressoBean.completaIngressos}" multiple="true"
+                                        converter="#{ingressoConverter}"
+                                        var="ingresso" itemValue="#{ingresso}" itemLabel="#{ingresso.título}" />
+                        <p:message for="ingressoAutoComplete" />
+                        <h:outputText value="Tipo de Pagamento *" />
+                        <p:selectOneMenu id="pagamentoSelectOneMenu"
+                                         value="#{vendaBean.value.pagamento}"
+                                         required="false" label="Pagamento" style="width:100px">
+                            <f:selectItems value="#{vendaBean.getPagamentos(false)}" />
+                        </p:selectOneMenu>
+                        <p:message for="pagamentoSelectOneMenu" />
+                        <h:outputText value="Meia Entrada? *" />
+                        <p:selectBooleanCheckbox id="meiaEntradaBooleanCheckbox"
+                                                 value="#{vendaBean.value.meiaEntrada}" />
+                        <p:message for="meiaEntradaBooleanCheckbox"/>
+                    </h:panelGrid>
+                </p:panel>
+                <h:panelGroup rendered="#{!vendaBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{vendaBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{vendaBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{vendaBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{vendaBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Ingressos</h2>
+        <p:panel header="Ingressos Cadastrados">
+            <p:outputPanel id="ingresso">
+                <p:dataTable id="dataTable" var="ingresso"
+                             value="#{ingressoBean.all}"
+                             widgetVar="tabelaIngressos"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{ingressoBean.ingressosFiltrados}">
+                    <p:column headerText="Nome/Título do Evento" filterBy="título" footerText="startsWith">
+                        <h:outputText value="#{ingresso.título}" />
+                    </p:column>
+                    <p:column filterBy="tipo"
+                              headerText="Tipo" footerText="exact"
+                              filterOptions="#{ingressoBean.getTipos(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{ingresso.tipo}" />
+                    </p:column>
+                    <p:column headerText="Classificação Indicativa">
+                        <h:outputText value="#{ingresso.indicativa}" />
+                    </p:column>
+                    <p:column headerText="Local" filterBy="localidade" footerText="startsWith">
+                        <h:outputText value="#{ingresso.localidade}" />
+                    </p:column>
+                    <p:column headerText="Dia">
+                        <h:outputText value="#{ingresso.dia}" />
+                    </p:column>
+                    <p:column headerText="Horário">
+                        <h:outputText value="#{ingresso.horário}" />
+                    </p:column>
+                    <p:column headerText="Valor do Ingresso">
+                        <h:outputText value="#{ingresso.valorIngresso}" />
+                    </p:column>
+                    <p:column headerText="Presencial">
+                        <h:outputText value="#{ingresso.presencial}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{ingressoBean.consultar(ingresso)}"
+                                         oncomplete="panelIngresso.show();"
+                                         update=":form:dadosIngresso" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{ingressoBean.inserir()}"
+                                     oncomplete="panelIngresso.show();"
+                                     update=":form:displayIngresso" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Ingresso" id="dadosIngresso" widgetVar="panelIngresso"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroIngresso"/>
+            <h:panelGrid id="displayIngresso" columns="1" styleClass="grid">
+                <p:panel>
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                        <h:outputText value="Nome/Título do Evento *" />
+                        <p:inputText id="títuloInputText" required="false" label="Nome"
+                                     value="#{ingressoBean.value.título}" styleClass="ipt-large" />
+                        <p:message for="títuloInputText" />
+                        <h:outputText value="Tipo *" />
+                        <p:selectOneMenu id="tipoSelectOneMenu"
+                                         value="#{ingressoBean.value.tipo}"
+                                         required="false" label="Tipo" style="width:100px">
+                            <f:selectItems value="#{ingressoBean.getTipos(false)}" />
+                        </p:selectOneMenu>
+                        <p:message for="tipoSelectOneMenu" />
+                        <h:outputText value="Classificação Indicativa *"/>
+                        <p:selectOneRadio id="indicativaSelectOneRadio"
+                                          value="#{ingressoBean.value.indicativa}">
+                            <f:selectItem itemValue="LIVRE" itemLabel="Livre"/>
+                            <f:selectItem itemValue="10 anos" itemLabel="+10"/>
+                            <f:selectItem itemValue="12 anos" itemLabel="+12"/>
+                            <f:selectItem itemValue="14 anos" itemLabel="+14"/>
+                            <f:selectItem itemValue="16 anos" itemLabel="+16"/>
+                            <f:selectItem itemValue="18 anos" itemLabel="+18"/>
+                        </p:selectOneRadio>
+                        <p:message for="indicativaSelectOneRadio" />
+                        <h:outputText value="Local *"/>
+                        <p:inputText id="localInputText"
+                                     value="#{ingressoBean.value.localidade}"/>
+                        <p:message for="localInputText" />
+                        <h:outputText value="Dia *"/>
+                        <p:inputText id="diaInputText"
+                                     value="#{ingressoBean.value.dia}"
+                                     validatorMessage="Formato incorreto da data (dd/mm/aaaa)">
+                            <f:validateRegex pattern="^(0[1-9]|1[0-9]|2[0-9]|3[0-1])/(0[1-9]|1[0-2])/\d{4}"/>     
+                        </p:inputText>
+                        <p:message for="diaInputText" />
+                        <h:outputText value="Horário *"/>
+                        <p:inputText id="horarioInputText"
+                                     value="#{ingressoBean.value.horário}" 
+                                     validatorMessage="Formato incorreto do horário (HH:MM)">
+                            <f:validateRegex pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="horarioInputText" />
+                        <h:outputText value="Valor do Ingresso *"/>
+                        <p:inputText id="valor_ingressoInputText"
+                                     value="#{ingressoBean.value.valorIngresso}"
+                                     validatorMessage="Formato incorreto do valor (###,##)">
+                            <f:validateRegex pattern="^[1-9]\d*,[0-9][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="valor_ingressoInputText" />
+                        <h:outputText value="Evento Presencial? *" />
+                        <p:selectBooleanCheckbox id="presencialBooleanCheckbox"
+                                                 value="#{ingressoBean.value.presencial}" />
+                        <p:message for="presencialBooleanCheckbox"/>
+                    </h:panelGrid>
+                </p:panel>
+                <h:panelGroup rendered="#{!ingressoBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{ingressoBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{ingressoBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{ingressoBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{ingressoBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>
