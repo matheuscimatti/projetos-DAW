@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Filmes</h2>
+        <p:panel header="Filmes Cadastrados">
+            <p:outputPanel id="cinema">
+                <p:dataTable id="dataTable" var="cinema"
+                             value="#{cinemaBean.all}"
+                             widgetVar="tabelaCinemas"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{cinemaBean.cinemasFiltrados}">
+                    <p:column headerText="Nome do Filme" filterBy="filme" footerText="startsWith">
+                        <h:outputText value="#{cinema.filme}" />
+                    </p:column>
+                    <p:column headerText="Gênero">
+                        <h:outputText value="#{cinema.gênero}" />
+                    </p:column>
+                    <p:column headerText="Classificação Indicativa">
+                        <h:outputText value="#{cinema.indicativa}" />
+                    </p:column>
+                    <p:column headerText="Local" filterBy="localidade" footerText="startsWith">
+                        <h:outputText value="#{cinema.localidade}" />
+                    </p:column>
+                    <p:column headerText="Sala">
+                        <h:outputText value="#{cinema.sala}" />
+                    </p:column>
+                    <p:column headerText="Dia">
+                        <h:outputText value="#{cinema.dia}" />
+                    </p:column>
+                    <p:column headerText="Sessão">
+                        <h:outputText value="#{cinema.sessão}" />
+                    </p:column>
+                    <p:column headerText="Valor do Ingresso">
+                        <h:outputText value="#{cinema.valorIngresso}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{cinemaBean.consultar(cinema)}"
+                                         oncomplete="panelCinema.show();"
+                                         update=":form:dadosCinema" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{cinemaBean.inserir()}"
+                                     oncomplete="panelCinema.show();"
+                                     update=":form:displayCinema" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Filme" id="dadosCinema" widgetVar="panelCinema"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroCinema"/>
+            <h:panelGrid id="displayCinema" columns="1" styleClass="grid">
+                <p:panel>
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                        <h:outputText value="Nome do Filme *" />
+                        <p:inputText id="filmeInputText" required="false" label="Filme"
+                                     value="#{cinemaBean.value.filme}" styleClass="ipt-large" />
+                        <p:message for="filmeInputText" />
+                        <h:outputText value="Gênero *" />
+                        <p:selectOneMenu id="gêneroSelectOneMenu" 
+                                         value="#{cinemaBean.value.gênero}" >
+                            <f:selectItem itemValue="Ação" itemLabel="Ação" />
+                            <f:selectItem itemValue="Aventura" itemLabel="Aventura" />
+                            <f:selectItem itemValue="Biográfico" itemLabel="Biográfico" />
+                            <f:selectItem itemValue="Comédia" itemLabel="Comédia" />
+                            <f:selectItem itemValue="Drama" itemLabel="Drama" />
+                            <f:selectItem itemValue="Fantasia" itemLabel="Fantasia" />
+                            <f:selectItem itemValue="Ficção Científica" itemLabel="Ficção Científica" />
+                            <f:selectItem itemValue="Histórico" itemLabel="Histórico" />
+                            <f:selectItem itemValue="Musical" itemLabel="Musical" />
+                            <f:selectItem itemValue="Romance" itemLabel="Romance" />
+                            <f:selectItem itemValue="Terror" itemLabel="Terror" />
+                        </p:selectOneMenu>
+                        <p:message for="gêneroSelectOneMenu" />
+                        <h:outputText value="Classificação Indicativa *"/>
+                        <p:selectOneRadio id="indicativaSelectOneRadio"
+                                          value="#{cinemaBean.value.indicativa}">
+                            <f:selectItem itemValue="LIVRE" itemLabel="Livre"/>
+                            <f:selectItem itemValue="10 anos" itemLabel="+10"/>
+                            <f:selectItem itemValue="12 anos" itemLabel="+12"/>
+                            <f:selectItem itemValue="14 anos" itemLabel="+14"/>
+                            <f:selectItem itemValue="16 anos" itemLabel="+16"/>
+                            <f:selectItem itemValue="18 anos" itemLabel="+18"/>
+                        </p:selectOneRadio>
+                        <p:message for="indicativaSelectOneRadio" />
+                        <h:outputText value="Local *"/>
+                        <p:inputText id="localInputText"
+                                     value="#{cinemaBean.value.localidade}"/>
+                        <p:message for="localInputText" />
+                        <h:outputText value="Sala *"/>
+                        <p:inputText id="salaInputText"
+                                     value="#{cinemaBean.value.sala}"/>
+                        <p:message for="salaInputText" />
+                        <h:outputText value="Dia *"/>
+                        <p:inputText id="diaInputText"
+                                     value="#{cinemaBean.value.dia}"
+                                     validatorMessage="Formato incorreto da data (dd/mm/aaaa)">
+                            <f:validateRegex pattern="^(0[1-9]|1[0-9]|2[0-9]|3[0-1])/(0[1-9]|1[0-2])/\d{4}"/>     
+                        </p:inputText>
+                        <p:message for="diaInputText" />
+                        <h:outputText value="Sessão *"/>
+                        <p:inputText id="sessãoInputText"
+                                     value="#{cinemaBean.value.sessão}" 
+                                     validatorMessage="Formato incorreto do horário da sessão (HH:MM)">
+                            <f:validateRegex pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="sessãoInputText" />
+                        <h:outputText value="Valor do Ingresso *"/>
+                        <p:inputText id="valor_ingressoInputText"
+                                     value="#{cinemaBean.value.valorIngresso}"
+                                     validatorMessage="Formato incorreto do valor (###,##)">
+                            <f:validateRegex pattern="^[1-9]\d*,[0-9][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="valor_ingressoInputText" />
+                    </h:panelGrid>
+                </p:panel>
+                <h:panelGroup rendered="#{!cinemaBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{cinemaBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{cinemaBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{cinemaBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{cinemaBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

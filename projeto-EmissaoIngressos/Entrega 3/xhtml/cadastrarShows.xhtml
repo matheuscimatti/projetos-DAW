@@ -1,0 +1,145 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Shows</h2>
+        <p:panel header="Shows Cadastrados">
+            <p:outputPanel id="show">
+                <p:dataTable id="dataTable" var="show"
+                             value="#{showBean.all}"
+                             widgetVar="tabelaShows"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{showBean.showsFiltrados}">
+                    <p:column headerText="Artista / Grupo" filterBy="artista" footerText="startsWith">
+                        <h:outputText value="#{show.artista}" />
+                    </p:column>
+                    <p:column headerText="Estilo Musical">
+                        <h:outputText value="#{show.estilo}" />
+                    </p:column>
+                    <p:column headerText="Classificação Indicativa">
+                        <h:outputText value="#{show.indicativa}" />
+                    </p:column>
+                    <p:column headerText="Local" filterBy="localidade" footerText="startsWith">
+                        <h:outputText value="#{show.localidade}" />
+                    </p:column>
+                    <p:column headerText="Dia">
+                        <h:outputText value="#{show.dia}" />
+                    </p:column>
+                    <p:column headerText="Horário">
+                        <h:outputText value="#{show.horário}" />
+                    </p:column>
+                    <p:column headerText="Valor do Ingresso">
+                        <h:outputText value="#{show.valorIngresso}" />
+                    </p:column>
+                    <p:column headerText="Presencial">
+                        <h:outputText value="#{show.presencial}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{showBean.consultar(show)}"
+                                         oncomplete="panelShow.show();"
+                                         update=":form:dadosShow" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{showBean.inserir()}"
+                                     oncomplete="panelShow.show();"
+                                     update=":form:displayShow" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Show" id="dadosShow" widgetVar="panelShow"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroShow"/>
+            <h:panelGrid id="displayShow" columns="1" styleClass="grid">
+                <p:panel>
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                        <h:outputText value="Artista/Grupo *" />
+                        <p:inputText id="artistaInputText" required="false" label="Artista"
+                                     value="#{showBean.value.artista}" styleClass="ipt-large" />
+                        <p:message for="artistaInputText" />
+                        <h:outputText value="Estilo *" />
+                        <p:selectOneMenu id="estiloSelectOneMenu" 
+                                         value="#{showBean.value.estilo}" >
+                            <f:selectItem itemValue="Axé" itemLabel="Axé" />
+                            <f:selectItem itemValue="Blues" itemLabel="Blues" />
+                            <f:selectItem itemValue="Bossa Nova" itemLabel="Bossa Nova" />
+                            <f:selectItem itemValue="Clássico" itemLabel="Clássico" />
+                            <f:selectItem itemValue="Country" itemLabel="Country" />
+                            <f:selectItem itemValue="Eletrônica" itemLabel="Eletrônica" />
+                            <f:selectItem itemValue="Folk" itemLabel="Folk" />
+                            <f:selectItem itemValue="Forró" itemLabel="Forró" />
+                            <f:selectItem itemValue="Gospel" itemLabel="Gospel" />
+                            <f:selectItem itemValue="Indie" itemLabel="Indie" />
+                            <f:selectItem itemValue="Jazz" itemLabel="Jazz" />
+                            <f:selectItem itemValue="J-Pop/J-Rock" itemLabel="J-Pop/J-Rock" />
+                            <f:selectItem itemValue="Metal" itemLabel="Metal" />
+                            <f:selectItem itemValue="MPB" itemLabel="MPB" />
+                            <f:selectItem itemValue="Pagode" itemLabel="Pagode" />
+                            <f:selectItem itemValue="Pop" itemLabel="Pop" />
+                            <f:selectItem itemValue="Metal" itemLabel="Metal" />
+                            <f:selectItem itemValue="Rock" itemLabel="Rock" />
+                            <f:selectItem itemValue="Samba" itemLabel="Samba" />
+                            <f:selectItem itemValue="Sertanejo" itemLabel="Sertanejo" />
+                        </p:selectOneMenu>
+                        <p:message for="estiloSelectOneMenu" />
+                        <h:outputText value="Classificação Indicativa *"/>
+                        <p:selectOneRadio id="indicativaSelectOneRadio"
+                                          value="#{showBean.value.indicativa}">
+                            <f:selectItem itemValue="LIVRE" itemLabel="Livre"/>
+                            <f:selectItem itemValue="10 anos" itemLabel="+10"/>
+                            <f:selectItem itemValue="12 anos" itemLabel="+12"/>
+                            <f:selectItem itemValue="14 anos" itemLabel="+14"/>
+                            <f:selectItem itemValue="16 anos" itemLabel="+16"/>
+                            <f:selectItem itemValue="18 anos" itemLabel="+18"/>
+                        </p:selectOneRadio>
+                        <p:message for="indicativaSelectOneRadio" />
+                        <h:outputText value="Local *"/>
+                        <p:inputText id="localInputText"
+                                     value="#{showBean.value.localidade}"/>
+                        <p:message for="localInputText" />
+                        <h:outputText value="Dia *"/>
+                        <p:inputText id="diaInputText"
+                                     value="#{showBean.value.dia}"
+                                     validatorMessage="Formato incorreto da data (dd/mm/aaaa)">
+                            <f:validateRegex pattern="^(0[1-9]|1[0-9]|2[0-9]|3[0-1])/(0[1-9]|1[0-2])/\d{4}"/>     
+                        </p:inputText>
+                        <p:message for="diaInputText" />
+                        <h:outputText value="Horário *"/>
+                        <p:inputText id="horarioInputText"
+                                     value="#{showBean.value.horário}" 
+                                     validatorMessage="Formato incorreto do horário (HH:MM)">
+                            <f:validateRegex pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="horarioInputText" />
+                        <h:outputText value="Valor do Ingresso *"/>
+                        <p:inputText id="valor_ingressoInputText"
+                                     value="#{showBean.value.valorIngresso}"
+                                     validatorMessage="Formato incorreto do valor (###,##)">
+                            <f:validateRegex pattern="^[1-9]\d*,[0-9][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="valor_ingressoInputText" />
+                        <h:outputText value="Evento Presencial? *" />
+                        <p:selectBooleanCheckbox id="presencialBooleanCheckbox"
+                                                 value="#{showBean.value.presencial}" />
+                        <p:message for="presencialBooleanCheckbox"/>
+                    </h:panelGrid>
+                </p:panel>
+                <h:panelGroup rendered="#{!showBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{showBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{showBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{showBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{showBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>

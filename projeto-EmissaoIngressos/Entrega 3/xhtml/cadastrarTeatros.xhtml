@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Peças de Teatro</h2>
+        <p:panel header="Peças Cadastradas">
+            <p:outputPanel id="teatro">
+                <p:dataTable id="dataTable" var="teatro"
+                             value="#{teatroBean.all}"
+                             widgetVar="tabelaTeatros"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{teatroBean.teatrosFiltrados}">
+                    <p:column headerText="Nome da Peça" filterBy="peça" footerText="startsWith">
+                        <h:outputText value="#{teatro.peça}" />
+                    </p:column>
+                    <p:column headerText="Gênero">
+                        <h:outputText value="#{teatro.gênero}" />
+                    </p:column>
+                    <p:column headerText="Classificação Indicativa">
+                        <h:outputText value="#{teatro.indicativa}" />
+                    </p:column>
+                    <p:column headerText="Local" filterBy="localidade" footerText="startsWith">
+                        <h:outputText value="#{teatro.localidade}" />
+                    </p:column>
+                    <p:column headerText="Dia">
+                        <h:outputText value="#{teatro.dia}" />
+                    </p:column>
+                    <p:column headerText="Horário">
+                        <h:outputText value="#{teatro.horário}" />
+                    </p:column>
+                    <p:column headerText="Valor do Ingresso">
+                        <h:outputText value="#{teatro.valorIngresso}" />
+                    </p:column>
+                    <p:column headerText="Presencial">
+                        <h:outputText value="#{teatro.presencial}" />
+                    </p:column>
+                    <p:column headerText="Ação">
+                        <p:commandButton value="Consultar"
+                                         action="#{teatroBean.consultar(teatro)}"
+                                         oncomplete="panelTeatro.show();"
+                                         update=":form:dadosTeatro" />
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{teatroBean.inserir()}"
+                                     oncomplete="panelTeatro.show();"
+                                     update=":form:displayTeatro" />
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados da Peça" id="dadosTeatro" widgetVar="panelTeatro"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroTeatro"/>
+            <h:panelGrid id="displayTeatro" columns="1" styleClass="grid">
+                <p:panel>
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                        <h:outputText value="Nome da Peça *" />
+                        <p:inputText id="nomeInputText" required="false" label="Nome"
+                                     value="#{teatroBean.value.peça}" styleClass="ipt-large" />
+                        <p:message for="nomeInputText" />
+                        <h:outputText value="Gênero *" />
+                        <p:selectOneMenu id="gêneroSelectOneMenu" 
+                                         value="#{teatroBean.value.gênero}" >
+                            <f:selectItem itemValue="Auto" itemLabel="Auto" />
+                            <f:selectItem itemValue="Comédia" itemLabel="Comédia" />
+                            <f:selectItem itemValue="Drama" itemLabel="Drama" />
+                            <f:selectItem itemValue="Farsa" itemLabel="Farsa" />
+                            <f:selectItem itemValue="Improvisação" itemLabel="Improvisação" />
+                            <f:selectItem itemValue="Melodrama" itemLabel="Melodrama" />
+                            <f:selectItem itemValue="Mímica" itemLabel="Mímica" />
+                            <f:selectItem itemValue="Musical" itemLabel="Musical" />
+                            <f:selectItem itemValue="Ópera" itemLabel="Ópera" />
+                            <f:selectItem itemValue="Stand-up Comedy" itemLabel="Stand-up Comedy" />
+                            <f:selectItem itemValue="Teatro de Fantoches" itemLabel="Teatro de Fantoches" />
+                            <f:selectItem itemValue="Teatro de Sombras" itemLabel="Teatro de Sombras" />
+                        </p:selectOneMenu>
+                        <p:message for="gêneroSelectOneMenu" />
+                        <h:outputText value="Classificação Indicativa *"/>
+                        <p:selectOneRadio id="indicativaSelectOneRadio"
+                                          value="#{teatroBean.value.indicativa}">
+                            <f:selectItem itemValue="LIVRE" itemLabel="Livre"/>
+                            <f:selectItem itemValue="10 anos" itemLabel="+10"/>
+                            <f:selectItem itemValue="12 anos" itemLabel="+12"/>
+                            <f:selectItem itemValue="14 anos" itemLabel="+14"/>
+                            <f:selectItem itemValue="16 anos" itemLabel="+16"/>
+                            <f:selectItem itemValue="18 anos" itemLabel="+18"/>
+                        </p:selectOneRadio>
+                        <p:message for="indicativaSelectOneRadio" />
+                        <h:outputText value="Local *"/>
+                        <p:inputText id="localInputText"
+                                     value="#{teatroBean.value.localidade}"/>
+                        <p:message for="localInputText" />
+                        <h:outputText value="Dia *"/>
+                        <p:inputText id="diaInputText"
+                                     value="#{teatroBean.value.dia}"
+                                     validatorMessage="Formato incorreto da data (dd/mm/aaaa)">
+                            <f:validateRegex pattern="^(0[1-9]|1[0-9]|2[0-9]|3[0-1])/(0[1-9]|1[0-2])/\d{4}"/>     
+                        </p:inputText>
+                        <p:message for="diaInputText" />
+                        <h:outputText value="Horário *"/>
+                        <p:inputText id="horarioInputText"
+                                     value="#{teatroBean.value.horário}" 
+                                     validatorMessage="Formato incorreto do horário (HH:MM)">
+                            <f:validateRegex pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="horarioInputText" />
+                        <h:outputText value="Valor do Ingresso *"/>
+                        <p:inputText id="valor_ingressoInputText"
+                                     value="#{teatroBean.value.valorIngresso}"
+                                     validatorMessage="Formato incorreto do valor (###,##)">
+                            <f:validateRegex pattern="^[1-9]\d*,[0-9][0-9]$"/>
+                        </p:inputText>
+                        <p:message for="valor_ingressoInputText" />
+                        <h:outputText value="Evento Presencial? *" />
+                        <p:selectBooleanCheckbox id="presencialBooleanCheckbox"
+                                                 value="#{teatroBean.value.presencial}" />
+                        <p:message for="presencialBooleanCheckbox"/>
+                    </h:panelGrid>
+                </p:panel>
+                <h:panelGroup rendered="#{!teatroBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{teatroBean.save()}"
+                                     ajax="false" icon="ui-icon-circle-plus" />
+                </h:panelGroup>
+                <h:panelGroup rendered="#{teatroBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{teatroBean.update()}"
+                                     ajax="false" icon="ui-icon-check" />
+                    <p:commandButton value="Remover" action="#{teatroBean.delete()}"
+                                     ajax="false" icon="ui-icon-circle-minus" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </p:panel>
+    </ui:define>
+</ui:composition>
